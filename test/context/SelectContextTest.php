@@ -11,7 +11,7 @@ use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
 
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 class SelectContextTest extends TestCase
 {

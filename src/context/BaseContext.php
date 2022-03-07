@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Stk2k\PowerPdo\context;
+namespace Stk2k\PowerPDO\context;
 
 use PDO;
 use Psr\Log\LoggerInterface;

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Stk2k\PowerPdo\exception;
+namespace Stk2k\PowerPDO\exception;
 
 use Exception;
 

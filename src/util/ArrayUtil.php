@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Stk2k\PowerPdo\util;
+namespace Stk2k\PowerPDO\util;
 
 class ArrayUtil
 {

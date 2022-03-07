@@ -1,12 +1,12 @@
 <?php /** @noinspection DuplicatedCode */
 declare(strict_types=1);
-namespace Stk2k\PowerPdo\context;
+namespace Stk2k\PowerPDO\context;
 
 use PDO;
 use PDOStatement;
 
-use Stk2k\PowerPdo\sql\Join;
-use Stk2k\PowerPdo\util\ArrayUtil;
+use Stk2k\PowerPDO\sql\Join;
+use Stk2k\PowerPDO\util\ArrayUtil;
 
 class SelectContext extends BaseContext
 {

@@ -39,7 +39,7 @@ class UserEntity
 ### For MySQL
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'mysql:dbname=mydatabase;host=localhost';
 $user = 'myuser';
@@ -56,7 +56,7 @@ $users = (new PowerPDO($pdo))
 ### For SQLite
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
@@ -71,7 +71,7 @@ $users = (new PowerPDO($pdo))
 ### Logging(PSR-3 Logger)
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -93,7 +93,7 @@ $users = (new PowerPDO($pdo, $log))
 ### Specifying PDO options
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -108,8 +108,8 @@ $pdo = new PDO($dsn, null, [
 ### Transaction
 
 ```php
-use Stk2k\PowerPdo\Transaction;
-use Stk2k\PowerPdo\exception\TransactionException;
+use Stk2k\PowerPDO\Transaction;
+use Stk2k\PowerPDO\exception\TransactionException;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
@@ -128,7 +128,7 @@ catch(TransactionException $ex){
 ### INSERT
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
@@ -170,7 +170,7 @@ $new_user->email = 'hanako@sample.com';
 ### UPDATE
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
@@ -210,7 +210,7 @@ $new_user->email = 'hanako2@sample.com';
 ### DELETE
 
 ```php
-use Stk2k\PowerPdo\PowerPDO;
+use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);

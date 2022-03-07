@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Stk2k\PowerPdo\sql;
+namespace Stk2k\PowerPDO\sql;
 
 class Join
 {

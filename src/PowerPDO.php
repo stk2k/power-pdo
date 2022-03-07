@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
-namespace Stk2k\PowerPdo;
+namespace Stk2k\PowerPDO;
 
 use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-use Stk2k\PowerPdo\context\InsertContext;
-use Stk2k\PowerPdo\context\SelectContext;
-use Stk2k\PowerPdo\context\UpdateContext;
+use Stk2k\PowerPDO\context\InsertContext;
+use Stk2k\PowerPDO\context\SelectContext;
+use Stk2k\PowerPDO\context\UpdateContext;
 
 class PowerPDO
 {

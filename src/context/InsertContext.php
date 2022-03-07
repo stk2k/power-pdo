@@ -1,8 +1,8 @@
 <?php /** @noinspection DuplicatedCode */
 declare(strict_types=1);
-namespace Stk2k\PowerPdo\context;
+namespace Stk2k\PowerPDO\context;
 
-use Stk2k\PowerPdo\util\ArrayUtil;
+use Stk2k\PowerPDO\util\ArrayUtil;
 
 class InsertContext extends BaseContext
 {

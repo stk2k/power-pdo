@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace Stk2k\PowerPdo;
+namespace Stk2k\PowerPDO;
 
 use PDO;
 
-use Stk2k\PowerPdo\exception\TransactionException;
+use Stk2k\PowerPDO\exception\TransactionException;
 
 class Transaction
 {
