@@ -1,14 +1,14 @@
 {
-  "name": "knot-lib/datastore",
-  "description": "Database access layer for PHP7",
-  "keywords": ["PHP","PHP7","Databse","Repository","kNot Framework"],
-  "homepage": "https://github.com/knot-lib/datastore",
+  "name": "stk2k/power-pdo",
+  "description": "Powerful and thin wrapper of PDO",
+  "keywords": ["PHP","PHP7","PHP8","Databse","Query Builder","Entity"],
+  "homepage": "https://github.com/stk2k/power-pdo",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
       "name": "Katsuki Shuto",
-      "email": "stk2k@knot-framework.com"
+      "email": "stk2k@sazysoft.com"
     }
   ],
   "require": {
