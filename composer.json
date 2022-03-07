@@ -1,0 +1,33 @@
+{
+  "name": "knot-lib/datastore",
+  "description": "Database access layer for PHP7",
+  "keywords": ["PHP","PHP7","Databse","Repository","kNot Framework"],
+  "homepage": "https://github.com/knot-lib/datastore",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Katsuki Shuto",
+      "email": "stk2k@knot-framework.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.3",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "psr/log": ">=1.1.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.5.15",
+    "php-coveralls/php-coveralls": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Stk2k\\PowerPdo\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  }
+}
