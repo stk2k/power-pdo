@@ -6,6 +6,7 @@ use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use Stk2k\PowerPDO\context\CountContext;
 use Stk2k\PowerPDO\context\InsertContext;
 use Stk2k\PowerPDO\context\SelectContext;
 use Stk2k\PowerPDO\context\UpdateContext;
@@ -62,6 +63,17 @@ class PowerPDO
             return  new SelectContext($this->pdo, $this->logger);
         }
         return (new SelectContext($this->pdo, $this->logger))->fields($fields);
+    }
+
+    /**
+     * COUNT
+     */
+    public function count(string $field = null) : CountContext
+    {
+        if ($field == null){
+            return  (new CountContext($this->pdo, $this->logger))->field();
+        }
+        return (new CountContext($this->pdo, $this->logger))->field($field);
     }
 
     /**
