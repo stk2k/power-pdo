@@ -101,10 +101,6 @@ use Monolog\Handler\StreamHandler;
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
 
-// monolog
-$log = new Logger('name');
-$log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
-
 $users = (new PowerPDO($pdo, $log))
     ->count()
     ->from("users")
