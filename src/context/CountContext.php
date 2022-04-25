@@ -89,7 +89,8 @@ class CountContext extends BaseContext
         $stmt = $this->executeSQL();
 
         if ($row = $stmt->fetch()){
-            return $row[0] ?? -1;
+            $val = $row[0] ?? -1;
+            return ctype_digit($val) ? intval($val) : -1;
         }
         return -1;
     }
