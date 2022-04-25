@@ -84,7 +84,7 @@ class CountContext extends BaseContext
      *
      * @return int                   if failed, returns -1
      */
-    public function count() : int
+    public function get() : int
     {
         $stmt = $this->executeSQL();
 

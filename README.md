@@ -90,6 +90,28 @@ $users = (new PowerPDO($pdo, $log))
     ->getAll(UserEntity::class);
 ```
 
+### Count
+
+```php
+use Stk2k\PowerPDO\PowerPDO;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
+$pdo = new PDO($dsn);
+
+// monolog
+$log = new Logger('name');
+$log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
+
+$users = (new PowerPDO($pdo, $log))
+    ->count()
+    ->from("users")
+    ->where("deleted = 0")
+    ->get();
+```
+
 ### Specifying PDO options
 
 ```php
