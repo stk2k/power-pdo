@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 declare(strict_types=1);
 
 namespace Stk2k\PowerPDO\context;
@@ -86,49 +86,10 @@ class CountContext extends BaseContext
      */
     public function get() : int
     {
-        $stmt = $this->executeSQL();
-
-        if ($row = $stmt->fetch()){
-            $val = $row[0] ?? -1;
-            return ctype_digit($val) ? intval($val) : -1;
-        }
-        return -1;
-    }
-
-    /**
-     * execute SQL
-     *
-     * @return PDOStatement
-     */
-    private function executeSQL() : PDOStatement
-    {
-        $pdo = $this->getPDO();
-        $logger = $this->getLogger();
-
         // generate SQL
         $sql = $this->buildSelectSQL();
 
-        $logger->debug("SQL: {$sql}");
-
-        // prepare SQL
-        $stmt = $pdo->prepare($sql);
-
-        // specifies placeholders
-        if (is_array($this->placeholders)){
-            foreach($this->placeholders as $k => $v)
-            {
-                $stmt->bindValue($k, $v);
-                $logger->debug("binded: [{$k}]={$v}");
-            }
-        }
-
-        // fetch mode: CLASS
-        $stmt->setFetchMode(PDO::FETCH_NUM);
-
-        // execute SQL
-        $stmt->execute();
-
-        return $stmt;
+        return $this->getPowerPDO()->fetchNumber($sql, $this->placeholders);
     }
 
     /**

@@ -1,4 +1,6 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
+/** @noinspection DuplicatedCode */
+/** @noinspection SqlNoDataSourceInspection */
 declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
@@ -77,9 +79,10 @@ class SelectContext extends BaseContext
      */
     public function getAll(string $entity_class) : array
     {
-        $stmt = $this->executeSQL($entity_class);
+        // generate SQL
+        $sql = $this->buildSelectSQL();
 
-        return $stmt->fetchAll();
+        return $this->getPowerPDO()->fetchAll($entity_class, $sql, $this->placeholders);
     }
 
     /**
@@ -91,47 +94,10 @@ class SelectContext extends BaseContext
      */
     public function getFirst(string $entity_class) : ?object
     {
-        $stmt = $this->executeSQL($entity_class);
-
-        return $stmt->fetch();
-    }
-
-    /**
-     * execute SQL
-     *
-     * @param string $entity_class
-     *
-     * @return PDOStatement
-     */
-    private function executeSQL(string $entity_class) : PDOStatement
-    {
-        $pdo = $this->getPDO();
-        $logger = $this->getLogger();
-
         // generate SQL
         $sql = $this->buildSelectSQL();
 
-        $logger->debug("SQL: {$sql}");
-
-        // prepare SQL
-        $stmt = $pdo->prepare($sql);
-
-        // specifies placeholders
-        if (is_array($this->placeholders)){
-            foreach($this->placeholders as $k => $v)
-            {
-                $stmt->bindValue($k, $v);
-                $logger->debug("binded: [{$k}]={$v}");
-            }
-        }
-
-        // fetch mode: CLASS
-        $stmt->setFetchMode(PDO::FETCH_CLASS, $entity_class);
-
-        // execute SQL
-        $stmt->execute();
-
-        return $stmt;
+        return $this->getPowerPDO()->fetchObject($entity_class, $sql, $this->placeholders);
     }
 
     /**

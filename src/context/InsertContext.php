@@ -1,4 +1,6 @@
-<?php /** @noinspection DuplicatedCode */
+<?php
+/** @noinspection DuplicatedCode */
+/** @noinspection SqlNoDataSourceInspection */
 declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
@@ -52,28 +54,11 @@ class InsertContext extends BaseContext
      */
     public function execute() : void
     {
-        $pdo = $this->getPDO();
-        $logger = $this->getLogger();
-
         // generate SQL
         $sql = $this->buildInsertSQL();
 
-        $logger->debug("SQL: {$sql}");
-
-        // prepare SQL
-        $stmt = $pdo->prepare($sql);
-
-        // specifies placeholders
-        if (is_array($this->placeholders)){
-            foreach($this->placeholders as $k => $v)
-            {
-                $stmt->bindValue($k, $v);
-                $logger->debug("binded: [{$k}]={$v}");
-            }
-        }
-
         // execute SQL
-        $stmt->execute();
+        $this->getPowerPDO()->execute($sql, $this->placeholders);
     }
 
     /**

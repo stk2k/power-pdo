@@ -23,7 +23,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Stk2k\\PowerPDO\\": "src/"
+      "Stk2k\\PowerPDO\\": "src/",
+      "Stk2k\\PowerPDO\\Test\\": "test/"
     }
   },
   "autoload-dev": {
