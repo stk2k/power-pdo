@@ -170,6 +170,8 @@ class PowerPDO
     {
         $stmt = $this->prepareSQL($sql, $params);
 
+        $stmt->execute();
+
         $row = $stmt->fetch(PDO::FETCH_NUM);
 
         if (is_array($row)){

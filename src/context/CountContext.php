@@ -120,12 +120,15 @@ class CountContext extends BaseContext
         }
 
         // WHERE
-        $sql[] = "WHERE";
-        $where = [];
-        foreach($this->where as $item){
-            $where[] = $item;
+        if (is_array($this->where))
+        {
+            $sql[] = "WHERE";
+            $where = [];
+            foreach($this->where as $item){
+                $where[] = $item;
+            }
+            $sql[] = implode(" AND ", $where);
         }
-        $sql[] = implode(" AND ", $where);
 
         return  implode(" ", $sql);
     }

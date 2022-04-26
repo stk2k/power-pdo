@@ -2,7 +2,7 @@
 /** @noinspection SqlDialectInspection */
 declare(strict_types=1);
 
-namespace context;
+namespace Stk2k\PowerPDO\Test\context;
 
 use PHPUnit\Framework\TestCase;
 

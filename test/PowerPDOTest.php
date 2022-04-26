@@ -46,4 +46,12 @@ class PowerPDOTest extends TestCase
         $this->assertEquals(UserEntity::Amanda(), $users[1]);
     }
 
+    public function testCount()
+    {
+        $pdo = new PowerPDO($this->pdo);
+
+        $users = $pdo->count()->from("users")->get();
+
+        $this->assertEquals(2, $users);
+    }
 }

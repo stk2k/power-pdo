@@ -2,7 +2,7 @@
 /** @noinspection SqlDialectInspection */
 declare(strict_types=1);
 
-namespace context;
+namespace Stk2k\PowerPDO\Test\context;
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ use Stk2k\PowerPDO\PowerPDO;
 
 class CountContextTest extends TestCase
 {
-    const DSN = "sqlite:";
+    const DSN = "sqlite:" . __DIR__ . '/../test_db.db';
 
     private $pdo;
 
