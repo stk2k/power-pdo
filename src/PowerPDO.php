@@ -226,6 +226,9 @@ class PowerPDO
      */
     private function prepareSQL(string $sql, array $params = null)
     {
+        // update last SQL
+        $this->last_sql = new SQL($sql, $params);
+
         // prepare SQL
         $stmt = $this->pdo->prepare($sql);
 
@@ -237,9 +240,6 @@ class PowerPDO
                 $this->logger->debug("binded: [{$k}]={$v}");
             }
         }
-
-        // update last SQL
-        $this->last_sql = new SQL($sql, $params);
 
         $this->logger->debug("SQL: {$sql}");
 
