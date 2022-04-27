@@ -45,12 +45,6 @@ $dsn = 'mysql:dbname=mydatabase;host=localhost';
 $user = 'myuser';
 $password = 'mypass';
 $pdo = new PDO($dsn, $user, $password);
-
-$users = (new PowerPDO($pdo))
-    ->select("ID, user_name, nickname, email")
-    ->from("users")
-    ->where("deleted = 0")
-    ->getAll(UserEntity::class);
 ```
 
 ### For SQLite
@@ -60,24 +54,43 @@ use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $pdo = new PDO($dsn);
+```
 
+### SELECT
+
+```php
+
+// array style
+$users = (new PowerPDO($pdo))
+    ->select("ID, user_name, nickname, email")
+    ->from("users")
+    ->where("deleted = 0")
+    ->getAll();
+foreach($users as $u){
+    $uid = $u['ID'];
+    $name = $u['user_name'];
+    echo "[$uid]$name";
+}
+
+// entity style
 $users = (new PowerPDO($pdo))
     ->select("ID, user_name, nickname, email")
     ->from("users")
     ->where("deleted = 0")
     ->getAll(UserEntity::class);
+
+foreach($users as $u){
+    $uid = $u->ID;
+    $name = $u->user_name;
+    echo "[$uid]$name";
+}
 ```
 
 ### Logging(PSR-3 Logger)
 
 ```php
-use Stk2k\PowerPDO\PowerPDO;
-
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
 
 // monolog
 $log = new Logger('name');
@@ -93,13 +106,8 @@ $users = (new PowerPDO($pdo, $log))
 ### Count
 
 ```php
-use Stk2k\PowerPDO\PowerPDO;
-
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
 
 $users = (new PowerPDO($pdo))
     ->count()
@@ -108,29 +116,11 @@ $users = (new PowerPDO($pdo))
     ->get();
 ```
 
-### Specifying PDO options
-
-```php
-use Stk2k\PowerPDO\PowerPDO;
-
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn, null, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
-    PDO::ATTR_TIMEOUT => 10,
-]);
-```
-
 ### Transaction
 
 ```php
 use Stk2k\PowerPDO\Transaction;
 use Stk2k\PowerPDO\exception\TransactionException;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
 
 try{
     $tr = new Transaction($pdo);
@@ -146,28 +136,16 @@ catch(TransactionException $ex){
 ### INSERT
 
 ```php
-use Stk2k\PowerPDO\PowerPDO;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
-
-// literal style
+// array style
 (new PowerPDO($pdo))
     ->insert()
     ->into("users", "ID, user_name, nickname, email")
-    ->values("123, 'hanako', 'hana', 'hanako@sample.com'")
-    ->execute();
-
-// placeholder style
-(new PowerPDO($pdo))
-    ->insert()
-    ->into("users", "ID, user_name, nickname, email")
-    ->values(":ID, :user_name, :nickname, :email",[
-            ':ID' => 123,
-            ':user_name' => 'hanako',
-            ':nickname' => 'hana',
-            ':email' => 'hanako@sample.com',
-        ])
+    ->values(
+        "ID" => "123",
+        "user_name" => "hanako", 
+        "nickname" => "hana", 
+        "email" => "hanako@sample.com"
+    )
     ->execute();
 
 // entity style
@@ -188,33 +166,27 @@ $new_user->email = 'hanako@sample.com';
 ### UPDATE
 
 ```php
-use Stk2k\PowerPDO\PowerPDO;
-
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
-
 // literal style
 (new PowerPDO($pdo))
     ->update("users")
     ->set("user_name", "hanako2")
     ->set("email", "hanako2@sample.com")
+    ->where("ID = :ID", [':ID'=>1])
     ->execute();
 
-// placeholder style
+// array style
 (new PowerPDO($pdo))
     ->update("users")
-    ->set("user_name", ":user_name")
-    ->set("email", ":email")
-    ->bind([
-            ':user_name' => 'hanako2',
-            ':email' => 'hanako2@sample.com',
+    ->values([
+            'user_name' => 'hanako2',
+            'email' => 'hanako2@sample.com',
         ])
+    ->where("ID = :ID", [':ID'=>1])
     ->execute();
 
 // entity style
 $new_user = new UserEntity();
 
-$new_user->ID = 124;
 $new_user->user_name = 'hanako2';
 $new_user->nickname = 'hana2';
 $new_user->email = 'hanako2@sample.com';
@@ -222,6 +194,7 @@ $new_user->email = 'hanako2@sample.com';
 (new PowerPDO($pdo))
     ->update("users")
     ->values($new_user)
+    ->where("ID = :ID", [':ID'=>1])
     ->execute();
 ```
 

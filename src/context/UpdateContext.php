@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
 use Stk2k\PowerPDO\util\ArrayUtil;
+use Stk2k\PowerPDO\sql\SQL;
 
 class UpdateContext extends BaseContext
 {
     private $table;
-    private $sets;
     private $values;
     private $where;     /* array */
-    private $placeholders;
 
     /**
      * specifies table name
@@ -26,31 +25,22 @@ class UpdateContext extends BaseContext
     /**
      * specifies table values
      */
-    public function set(string $field, $value, array $placeholders = []) : self
+    public function set(string $field, $value) : self
     {
-        $this->sets[$field] = $value;
-        $this->values = null;
-        if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders, $placeholders);
-        }
+        $this->values[$field] = $value;
         return $this;
     }
 
     /**
      * specifies table values
      *
-     * @param object $values
-     * @param array $placeholders
+     * @param object|array $values
      *
      * @return $this
      */
-    public function values(object $values, array $placeholders = []) : self
+    public function values($values) : self
     {
-        $this->values = get_object_vars($values);
-        $this->sets = null;
-        if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders, $placeholders);
-        }
+        $this->values = is_array($values) ? $values : (is_object($values) ? get_object_vars($values) : []);
         return $this;
     }
 
@@ -61,17 +51,8 @@ class UpdateContext extends BaseContext
     {
         $this->where[] = $where_clause;
         if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders, $placeholders);
+            $this->values = ArrayUtil::merge($this->values, $placeholders);
         }
-        return $this;
-    }
-
-    /**
-     * bind values
-     */
-    public function bind(array $values) : self
-    {
-        $this->placeholders = ArrayUtil::merge($this->placeholders, $values);
         return $this;
     }
 
@@ -83,32 +64,38 @@ class UpdateContext extends BaseContext
         // generate SQL
         $sql = $this->buildUpdateSQL();
 
-        $this->getPowerPDO()->execute($sql, $this->placeholders);
+        $this->getPowerPDO()->execute($sql);
     }
 
     /**
      * build UPDATE sql
      */
-    private function buildUpdateSQL() : string
+    private function buildUpdateSQL() : SQL
     {
+        $params = [];
+
         // UPDATE
         $sql[] = "UPDATE {$this->table}";
 
         // SET
         $sql[] = "SET";
         $set = [];
-        foreach(ArrayUtil::merge($this->sets, $this->values) as $k => $v)
+        foreach($this->values as $k => $v)
         {
-            $set[] = "{$k}={$v}";
+            $set[] = "{$k}=:{$k}";
+            $params[":{$k}"] = $v;
         }
         $sql[] = implode(",", $set);
 
         // WHERE
-        $sql[] = "WHERE";
-        foreach($this->where as $where){
-            $sql[] = $where;
+        if ($this->where)
+        {
+            $sql[] = "WHERE";
+            foreach($this->where as $where){
+                $sql[] = $where;
+            }
         }
 
-        return  implode(" ", $sql);
+        return new SQL(implode(" ", $sql), $params);
     }
 }

@@ -128,19 +128,18 @@ class PowerPDO
     /**
      * Execute SQL
      *
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return PDOStatement
      */
-    public function execute(string $sql, array $params = null) : PDOStatement
+    public function execute(SQL $sql) : PDOStatement
     {
         // prepare SQL
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql->getText());
 
         // specifies placeholders
-        if (is_array($params)){
-            foreach($params as $k => $v)
+        if (is_array($sql->getParams())){
+            foreach($sql->getParams() as $k => $v)
             {
                 $stmt->bindValue($k, $v);
                 $this->logger->debug("binded: [{$k}]={$v}");
@@ -148,7 +147,7 @@ class PowerPDO
         }
 
         // update last SQL
-        $this->last_sql = new SQL($sql, $params);
+        $this->last_sql = $sql;
 
         $this->logger->debug("SQL: {$sql}");
 
@@ -183,7 +182,7 @@ class PowerPDO
     }
 
     /**
-     * Fetch record(s) for class
+     * Fetch record(s) as objects
      *
      * @param string $class
      * @param string $sql
@@ -191,7 +190,7 @@ class PowerPDO
      *
      * @return array
      */
-    public function fetchAll(string $class, string $sql, array $params = null) : array
+    public function fetchAllObjects(string $class, string $sql, array $params = null) : array
     {
         $stmt = $this->prepareSQL($sql, $params);
 
@@ -201,7 +200,7 @@ class PowerPDO
     }
 
     /**
-     * Fetch a record for class
+     * Fetch a record as an object
      *
      * @param string $class
      * @param string $sql
@@ -216,6 +215,41 @@ class PowerPDO
         $stmt->execute();
 
         return $stmt->fetchObject($class);
+    }
+
+    /**
+     * Fetch record(s)as an assoc array
+     *
+     * @param string $class
+     * @param string $sql
+     * @param array|null $params
+     *
+     * @return array
+     */
+    public function fetchAllAssoc( string $sql, array $params = null) : array
+    {
+        $stmt = $this->prepareSQL($sql, $params);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC, $class);
+    }
+
+    /**
+     * Fetch a record as an assoc array
+     *
+     * @param string $sql
+     * @param array|null $params
+     *
+     * @return mixed
+     */
+    public function fetchAssoc(string $sql, array $params = null)
+    {
+        $stmt = $this->prepareSQL($sql, $params);
+
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

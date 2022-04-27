@@ -12,16 +12,19 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 use Stk2k\PowerPDO\PowerPDO;
+use Stk2k\PowerPDO\Test\table\UsersTable;
 
 class CountContextTest extends TestCase
 {
-    const DSN = "sqlite:" . __DIR__ . '/../test_db.db';
+    const DSN = "sqlite::memory:";
 
     private $pdo;
 
     public function setUp(): void
     {
         $this->pdo = new PDO(self::DSN);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        UsersTable::init($this->pdo);
     }
 
     /**
@@ -55,5 +58,15 @@ class CountContextTest extends TestCase
 
         $this->assertEquals("SELECT DISTINCT COUNT(email) FROM users WHERE deleted = 0 AND user_name = :user_name", $result);
         $this->assertEquals([':user_name' => 'hanako'], $value);
+    }
+
+    public function testCount()
+    {
+        $cnt = (new PowerPDO($this->pdo))
+            ->count()
+            ->from("users")
+            ->get();
+
+        $this->assertEquals(3, $cnt);
     }
 }

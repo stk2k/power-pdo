@@ -13,7 +13,7 @@ use ReflectionMethod;
 use Stk2k\PowerPDO\PowerPDO;
 use Stk2k\PowerPDO\Test\table\UsersTable;
 
-class InsertContextTest extends TestCase
+class UpdateContextTest extends TestCase
 {
     const DSN = "sqlite::memory:";
 
@@ -29,65 +29,60 @@ class InsertContextTest extends TestCase
     /**
      * @throws ReflectionException
      */
-    public function testBuildInsertSQL()
+    public function testBuildUpdateSQL()
     {
         $values = [
-            'deleted' => 0,
             'user_name' => 'William Tiger',
             'nickname' => 'Bill',
             'email' => 'bill@tiger.com',
         ];
 
         $object = (new PowerPDO($this->pdo))
-            ->insert()
-            ->into("users")
+            ->update()
+            ->table("users")
             ->values($values);
-        $method = new ReflectionMethod($object, 'buildInsertSQL');
+        $method = new ReflectionMethod($object, 'buildUpdateSQL');
         $method->setAccessible(true);
-        $params = null;
         $result = $method->invoke($object);
 
         $sql = $result->getText();
         $params = $result->getParams();
 
         $params_expected = [
-            ':deleted' => 0,
             ':user_name' => 'William Tiger',
             ':nickname' => 'Bill',
             ':email' => 'bill@tiger.com',
         ];
 
-        $this->assertEquals("INSERT INTO users(deleted,user_name,nickname,email) VALUES(:deleted,:user_name,:nickname,:email)", $sql);
+        $this->assertEquals("UPDATE users SET user_name=:user_name,nickname=:nickname,email=:email", $sql);
         $this->assertEquals($params_expected, $params);
     }
 
-    public function testInsert()
+    public function testUpdate()
     {
         $values = [
-            'deleted' => 0,
-            'user_name' => 'William Tiger',
-            'nickname' => 'Bill',
-            'email' => 'bill@tiger.com',
+            'deleted' => 1,
+            'nickname' => 'Billy'
         ];
 
         (new PowerPDO($this->pdo))
-            ->insert()
-            ->into("users")
+            ->update("users")
             ->values($values)
+            ->where("ID = 1")
             ->execute();
 
         $stmt = $this->pdo->query("SELECT count(*) FROM users");
         $cnt = $stmt->fetch()[0];
 
-        $this->assertEquals(4, $cnt);
+        $this->assertEquals(3, $cnt);
 
-        $stmt = $this->pdo->query("SELECT * FROM users WHERE nickname = 'Bill'");
+        $stmt = $this->pdo->query("SELECT * FROM users WHERE nickname = 'Billy'");
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $values_expected = [
-            'deleted' => '0',
+            'deleted' => '1',
             'user_name' => 'William Tiger',
-            'nickname' => 'Bill',
+            'nickname' => 'Billy',
             'email' => 'bill@tiger.com',
             'ID' => 1
         ];

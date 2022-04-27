@@ -7,6 +7,8 @@ namespace Stk2k\PowerPDO\context;
 use PDO;
 use PDOStatement;
 
+use Psr\Log\LoggerInterface;
+use Stk2k\PowerPDO\PowerPDO;
 use Stk2k\PowerPDO\sql\Join;
 use Stk2k\PowerPDO\util\ArrayUtil;
 
@@ -20,6 +22,19 @@ class SelectContext extends BaseContext
 
     /** @var Join[] */
     private $joins;
+
+    /**
+     * Constructor
+     *
+     * @param PowerPDO $pdo
+     * @param  LoggerInterface $logger
+     */
+    public function __construct(PowerPDO $pdo, LoggerInterface $logger)
+    {
+        parent::__construct($pdo, $logger);
+
+        $this->fields = '*';
+    }
 
     /**
      * SELECT fields
@@ -73,31 +88,38 @@ class SelectContext extends BaseContext
     /**
      * get all records
      *
-     * @param string $entity_class
+     * @param string|null $entity_class
      *
      * @return array
      */
-    public function getAll(string $entity_class) : array
+    public function getAll(string $entity_class = null) : array
     {
         // generate SQL
         $sql = $this->buildSelectSQL();
 
-        return $this->getPowerPDO()->fetchAll($entity_class, $sql, $this->placeholders);
+        if ($entity_class){
+            return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql, $this->placeholders);
+        }
+        return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql, $this->placeholders);
     }
 
     /**
      * get first record
      *
-     * @param string $entity_class
+     * @param string|null $entity_class
      *
-     * @return object
+     * @return mixed
      */
-    public function getFirst(string $entity_class) : ?object
+    public function getFirst(string $entity_class = null)
     {
         // generate SQL
         $sql = $this->buildSelectSQL();
 
-        return $this->getPowerPDO()->fetchObject($entity_class, $sql, $this->placeholders);
+        if ($entity_class){
+            return $this->getPowerPDO()->fetchObject($entity_class, $sql, $this->placeholders);
+        }
+
+        return $this->getPowerPDO()->fetchAssoc($sql, $this->placeholders);
     }
 
     /**

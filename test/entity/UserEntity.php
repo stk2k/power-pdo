@@ -11,11 +11,23 @@ class UserEntity
     public $nickname;
     public $email;
 
-    public static function Adam() : UserEntity
+    public static function Bill() : UserEntity
     {
         $user = new UserEntity();
 
         $user->ID = 1;
+        $user->deleted = '0';
+        $user->user_name = "William Tiger";
+        $user->nickname = "Bill";
+        $user->email = "bill@tiger.com";
+
+        return $user;
+    }
+    public static function Adam() : UserEntity
+    {
+        $user = new UserEntity();
+
+        $user->ID = 2;
         $user->deleted = '0';
         $user->user_name = "Adam Smith";
         $user->nickname = "Dam";
@@ -27,7 +39,7 @@ class UserEntity
     {
         $user = new UserEntity();
 
-        $user->ID = 2;
+        $user->ID = 3;
         $user->deleted = '0';
         $user->user_name = "Amanda Cove";
         $user->nickname = "Ami";

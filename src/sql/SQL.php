@@ -33,4 +33,14 @@ class SQL
     {
         return $this->params;
     }
+
+    /**
+     * Converts to string
+     *
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return "{$this->text} [params]" . json_encode($this->params);
+    }
 }
