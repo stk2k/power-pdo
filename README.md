@@ -171,7 +171,7 @@ $new_user->email = 'hanako@sample.com';
     ->update("users")
     ->set("user_name", "hanako2")
     ->set("email", "hanako2@sample.com")
-    ->where("ID = :ID", [':ID'=>1])
+    ->where("ID = :ID", ['ID'=>1])
     ->execute();
 
 // array style
@@ -181,7 +181,7 @@ $new_user->email = 'hanako@sample.com';
             'user_name' => 'hanako2',
             'email' => 'hanako2@sample.com',
         ])
-    ->where("ID = :ID", [':ID'=>1])
+    ->where("ID = :ID", ['ID'=>1])
     ->execute();
 
 // entity style
@@ -194,7 +194,7 @@ $new_user->email = 'hanako2@sample.com';
 (new PowerPDO($pdo))
     ->update("users")
     ->values($new_user)
-    ->where("ID = :ID", [':ID'=>1])
+    ->where("ID = :ID", ['ID'=>1])
     ->execute();
 ```
 
