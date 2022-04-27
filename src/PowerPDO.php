@@ -61,9 +61,9 @@ class PowerPDO
     /**
      * Returns last executed SQL
      *
-     * @return SQL
+     * @return SQL|null
      */
-    public function getLastSQL() : SQL
+    public function getLastSQL()
     {
         return $this->last_sql;
     }
