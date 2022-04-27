@@ -4,22 +4,21 @@
 declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
+use Stk2k\PowerPDO\exception\PowerPdoException;
 use Stk2k\PowerPDO\util\ArrayUtil;
 
 class InsertContext extends BaseContext
 {
     private $table;
-    private $fields;
     private $values;
     private $placeholders;
 
     /**
-     * specifies table name and fields
+     * specifies table name
      */
-    public function into(string $table, string $fields = "") : self
+    public function into(string $table) : self
     {
         $this->table = $table;
-        $this->fields = $fields;
         return $this;
     }
 
@@ -51,6 +50,7 @@ class InsertContext extends BaseContext
 
     /**
      * execute SQL
+     * @throws PowerPdoException
      */
     public function execute() : void
     {
@@ -63,25 +63,39 @@ class InsertContext extends BaseContext
 
     /**
      * build INSERT sql
+     *
+     * @throws
      */
     private function buildInsertSQL() : string
     {
-        // INSERT INTO
-        $flds = explode(",", $this->fields);
-        $sql[] = "INSERT INTO {$this->table}({$this->fields})";
+        // fields from values key
+        $field_placeholders = [];
+        $values_map = null;
+        if (is_array($this->values))
+        {
+            $values_map = $this->values;
+        }
+        else if (is_object($this->values))
+        {
+            $values_map = get_object_vars($this->values);
+        }
+        else
+        {
+            throw new PowerPdoException("Insert requires values!");
+        }
+        foreach($values_map as $key => $value)
+        {
+            $field_placeholders[] = ":{$key}";
+            $this->placeholders[":{$key}"] = $value;
+        }
+
+        // INSERT INTO(fields, ...)
+        $insert_fields = implode(",", array_keys($values_map));
+        $sql[] = "INSERT INTO {$this->table}({$insert_fields})";
 
         // VALUES
-        if (is_string($this->values)){
-            $sql[] = "VALUES({$this->values})";
-        }
-        elseif (is_object($this->values)){
-            $entity_fields_map = get_object_vars($this->values);
-            $values = [];
-            foreach($flds as $field){
-                $values[] = $entity_fields_map[$field] ?? null;
-            }
-            $sql[] = "VALUES({$values})";
-        }
+        $field_placeholders = implode(",", $field_placeholders);
+        $sql[] = "VALUES({$field_placeholders})";
 
         return  implode(" ", $sql);
     }
