@@ -113,8 +113,8 @@ foreach($users as $u){
 $users = PowerPDO::make($dsn)
     ->select("ID, user_name, nickname, email")
     ->from("users")
-    ->where("deleted = 0")
-    ->bind([':nickname' => 'Bill'])
+    ->where("nickname LIKE :nickname")
+    ->bind(['nickname' => '%Bi%'])
     ->getAll();
 ```
 
