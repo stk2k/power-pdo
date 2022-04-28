@@ -4,6 +4,8 @@
 declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
+use Psr\Log\LoggerInterface;
+use Stk2k\PowerPDO\PowerPDO;
 use Stk2k\PowerPDO\util\ArrayUtil;
 use Stk2k\PowerPDO\sql\SQL;
 
@@ -12,6 +14,18 @@ class UpdateContext extends BaseContext
     private $table;
     private $values;
     private $where;     /* array */
+
+    /**
+     * @param PowerPDO $db
+     * @param LoggerInterface $logger
+     * @param string $table
+     */
+    public function __construct(PowerPDO $db, LoggerInterface $logger, string $table)
+    {
+        parent::__construct($db, $logger);
+
+        $this->table = $table;
+    }
 
     /**
      * specifies table name

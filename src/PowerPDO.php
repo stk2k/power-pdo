@@ -26,7 +26,7 @@ class PowerPDO
      *
      * @param PDO $pdo
      * @param ?LoggerInterface $logger
-     * @param ?array $pdo_options
+     * @param ?array $options
      */
     public function __construct(
         PDO $pdo,
@@ -132,12 +132,9 @@ class PowerPDO
     /**
      * UPDATE
      */
-    public function update(string $table = null) : UpdateContext
+    public function update(string $table) : UpdateContext
     {
-        if ($table == null){
-            return  new UpdateContext($this, $this->logger);
-        }
-        return (new UpdateContext($this, $this->logger))->table($table);
+        return new UpdateContext($this, $this->logger, $table);
     }
 
     /**

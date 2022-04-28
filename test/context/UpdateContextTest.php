@@ -38,8 +38,7 @@ class UpdateContextTest extends TestCase
         ];
 
         $object = (new PowerPDO($this->pdo))
-            ->update()
-            ->table("users")
+            ->update("users")
             ->values($values);
         $method = new ReflectionMethod($object, 'buildUpdateSQL');
         $method->setAccessible(true);
