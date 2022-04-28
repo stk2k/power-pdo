@@ -229,10 +229,7 @@ $pdo = new PDO($dsn);
 (new PowerPDO($pdo))
     ->delete()
     ->from("users")
-    ->where("email = :email")
-    ->bind([
-            ':email' => 'hanako2@sample.com',
-        ])
+    ->where("email = :email",['email' => 'hanako2@sample.com'])
     ->execute();
 ```
 
