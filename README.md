@@ -44,7 +44,10 @@ use Stk2k\PowerPDO\PowerPDO;
 $dsn = 'mysql:dbname=mydatabase;host=localhost';
 $user = 'myuser';
 $password = 'mypass';
+
 $ppdo = new PowerPDO(new PDO($dsn, $user, $password));
+or 
+$ppdo = PowerPDO::make($dsn, $user, $password);
 ```
 
 ### For SQLite
@@ -54,6 +57,8 @@ use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
 $ppdo = new PowerPDO(new PDO($dsn));
+or 
+$ppdo = PowerPDO::make($dsn);
 ```
 
 ### Logging(PSR-3 Logger)
@@ -66,11 +71,9 @@ use Monolog\Handler\StreamHandler;
 $log = new Logger('name');
 $log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
 
-$users = (new PowerPDO($pdo, $log))
-    ->select("ID, user_name, nickname, email")
-    ->from("users")
-    ->where("deleted = 0")
-    ->getAll(UserEntity::class);
+$ppdo = new PowerPDO(new PDO($dsn), $log);
+or 
+$ppdo = PowerPDO::make($dsn)->log($log);
 ```
 
 ### SELECT
@@ -78,7 +81,7 @@ $users = (new PowerPDO($pdo, $log))
 ```php
 
 // array style
-$users = (new PowerPDO($pdo))
+$users = PowerPDO::make($dsn)
     ->select("ID, user_name, nickname, email")
     ->from("users")
     ->where("deleted = 0")
@@ -90,7 +93,7 @@ foreach($users as $u){
 }
 
 // entity style
-$users = (new PowerPDO($pdo))
+$users = PowerPDO::make($dsn)
     ->select("ID, user_name, nickname, email")
     ->from("users")
     ->where("deleted = 0")
@@ -107,7 +110,7 @@ foreach($users as $u){
 
 ```php
 
-$users = (new PowerPDO($pdo))
+$users = PowerPDO::make($dsn)
     ->select("ID, user_name, nickname, email")
     ->from("users")
     ->where("deleted = 0")
@@ -121,7 +124,7 @@ $users = (new PowerPDO($pdo))
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-$users = (new PowerPDO($pdo))
+$users = PowerPDO::make($dsn)
     ->count()
     ->from("users")
     ->where("deleted = 0")
@@ -149,7 +152,7 @@ catch(TransactionException $ex){
 
 ```php
 // array style
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->insert()
     ->into("users", "ID, user_name, nickname, email")
     ->values(
@@ -168,7 +171,7 @@ $new_user->user_name = 'hanako';
 $new_user->nickname = 'hana';
 $new_user->email = 'hanako@sample.com';
 
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->insert()
     ->into("users")
     ->values($new_user)
@@ -179,7 +182,7 @@ $new_user->email = 'hanako@sample.com';
 
 ```php
 // literal style
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->update("users")
     ->set("user_name", "hanako2")
     ->set("email", "hanako2@sample.com")
@@ -187,7 +190,7 @@ $new_user->email = 'hanako@sample.com';
     ->execute();
 
 // array style
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->update("users")
     ->values([
             'user_name' => 'hanako2',
@@ -203,7 +206,7 @@ $new_user->user_name = 'hanako2';
 $new_user->nickname = 'hana2';
 $new_user->email = 'hanako2@sample.com';
 
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->update("users")
     ->values($new_user)
     ->where("ID = :ID", ['ID'=>1])
@@ -215,18 +218,15 @@ $new_user->email = 'hanako2@sample.com';
 ```php
 use Stk2k\PowerPDO\PowerPDO;
 
-$dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
-
 // literal style
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->delete()
     ->from("users")
     ->where("email = 'hanako2@sample.com'")
     ->execute();
 
 // placeholder style
-(new PowerPDO($pdo))
+PowerPDO::make($dsn)
     ->delete()
     ->from("users")
     ->where("email = :email",['email' => 'hanako2@sample.com'])

@@ -31,15 +31,39 @@ class PowerPDO
     public function __construct(
         PDO $pdo,
         LoggerInterface $logger = null,
-        array $pdo_options = null)
+        array $options = null)
     {
         $this->pdo = $pdo;
         $this->logger = $logger ?? new NullLogger;
 
-        if (is_array($pdo_options)){
-            foreach($pdo_options as $k => $v){
-                $pdo->setAttribute($k, $v);
-            }
+        if (is_array($options)){
+            $this->options($options);
+        }
+    }
+
+    /**
+     * Make new PowerPDO object
+     */
+    public static function make(string $dsn, string $user = null, string $password = null) : self
+    {
+        return new self(new PDO($dsn, $user, $password));
+    }
+
+    /**
+     * Specifies logger
+     */
+    public function logger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Specifies options
+     */
+    public function options(array $options)
+    {
+        foreach($options as $k => $v){
+            $this->pdo->setAttribute($k, $v);
         }
     }
 
