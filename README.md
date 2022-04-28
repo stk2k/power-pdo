@@ -53,7 +53,7 @@ $ppdo = new PowerPDO(new PDO($dsn, $user, $password));
 use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$ppdo = new PowerPDO($pdo);
+$ppdo = new PowerPDO(new PDO($dsn));
 ```
 
 ### Logging(PSR-3 Logger)
