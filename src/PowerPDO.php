@@ -157,6 +157,11 @@ class PowerPDO
      */
     public function execute(SQL $sql) : PDOStatement
     {
+        // update last SQL
+        $this->last_sql = $sql;
+
+        $this->logger->debug("SQL: {$sql}");
+
         // prepare SQL
         $stmt = $this->pdo->prepare($sql->getText());
 
@@ -168,11 +173,6 @@ class PowerPDO
                 $this->logger->debug("binded: [{$k}]={$v}");
             }
         }
-
-        // update last SQL
-        $this->last_sql = $sql;
-
-        $this->logger->debug("SQL: {$sql}");
 
         // execute SQL
         $stmt->execute();
@@ -281,6 +281,8 @@ class PowerPDO
         // update last SQL
         $this->last_sql = $sql;
 
+        $this->logger->debug("SQL: {$sql}");
+
         // prepare SQL
         $stmt = $this->pdo->prepare($sql->getText());
 
@@ -292,8 +294,6 @@ class PowerPDO
                 $this->logger->debug("binded: [{$k}]={$v}");
             }
         }
-
-        $this->logger->debug("SQL: {$sql}");
 
         return $stmt;
     }
