@@ -73,7 +73,7 @@ $log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
 
 $ppdo = new PowerPDO(new PDO($dsn), $log);
 or 
-$ppdo = PowerPDO::make($dsn)->log($log);
+$ppdo = PowerPDO::make($dsn)->logger($log);
 ```
 
 ### SELECT
