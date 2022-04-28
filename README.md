@@ -44,7 +44,7 @@ use Stk2k\PowerPDO\PowerPDO;
 $dsn = 'mysql:dbname=mydatabase;host=localhost';
 $user = 'myuser';
 $password = 'mypass';
-$pdo = new PDO($dsn, $user, $password);
+$ppdo = new PowerPDO(new PDO($dsn, $user, $password));
 ```
 
 ### For SQLite
@@ -53,7 +53,24 @@ $pdo = new PDO($dsn, $user, $password);
 use Stk2k\PowerPDO\PowerPDO;
 
 $dsn = 'sqlite:/path/to/dbfile_of_sqlite';
-$pdo = new PDO($dsn);
+$ppdo = new PowerPDO($pdo);
+```
+
+### Logging(PSR-3 Logger)
+
+```php
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+// monolog
+$log = new Logger('name');
+$log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
+
+$users = (new PowerPDO($pdo, $log))
+    ->select("ID, user_name, nickname, email")
+    ->from("users")
+    ->where("deleted = 0")
+    ->getAll(UserEntity::class);
 ```
 
 ### SELECT
@@ -96,23 +113,6 @@ $users = (new PowerPDO($pdo))
     ->where("deleted = 0")
     ->bind([':nickname' => 'Bill'])
     ->getAll();
-```
-
-### Logging(PSR-3 Logger)
-
-```php
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-// monolog
-$log = new Logger('name');
-$log->pushHandler(new StreamHandler('path/to/your.log', Logger::WARNING));
-
-$users = (new PowerPDO($pdo, $log))
-    ->select("ID, user_name, nickname, email")
-    ->from("users")
-    ->where("deleted = 0")
-    ->getAll(UserEntity::class);
 ```
 
 ### Count
