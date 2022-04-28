@@ -4,21 +4,20 @@
 declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
-use PDO;
-use PDOStatement;
-
 use Psr\Log\LoggerInterface;
+
 use Stk2k\PowerPDO\PowerPDO;
 use Stk2k\PowerPDO\sql\Join;
 use Stk2k\PowerPDO\util\ArrayUtil;
+use Stk2k\PowerPDO\sql\SQL;
 
 class SelectContext extends BaseContext
 {
     private $fields;
     private $table;
     private $table_alias;
+    private $values;
     private $where;     /* array */
-    private $placeholders;
 
     /** @var Join[] */
     private $joins;
@@ -58,11 +57,11 @@ class SelectContext extends BaseContext
     /**
      * WHERE caluse
      */
-    public function where(string $where_clause, array $placeholders = []) : self
+    public function where(string $where_clause, array $values = null) : self
     {
         $this->where[] = $where_clause;
-        if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders ?? [], $placeholders);
+        if (is_array($values)){
+            $this->values = ArrayUtil::merge($this->values ?? [], $values);
         }
         return $this;
     }
@@ -81,7 +80,7 @@ class SelectContext extends BaseContext
      */
     public function bind(array $values) : self
     {
-        $this->placeholders = ArrayUtil::merge($this->placeholders, $values);
+        $this->values = ArrayUtil::merge($this->values, $values);
         return $this;
     }
 
@@ -98,9 +97,9 @@ class SelectContext extends BaseContext
         $sql = $this->buildSelectSQL();
 
         if ($entity_class){
-            return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql, $this->placeholders);
+            return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql);
         }
-        return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql, $this->placeholders);
+        return $this->getPowerPDO()->fetchAllObjects($entity_class, $sql);
     }
 
     /**
@@ -116,17 +115,19 @@ class SelectContext extends BaseContext
         $sql = $this->buildSelectSQL();
 
         if ($entity_class){
-            return $this->getPowerPDO()->fetchObject($entity_class, $sql, $this->placeholders);
+            return $this->getPowerPDO()->fetchObject($entity_class, $sql);
         }
 
-        return $this->getPowerPDO()->fetchAssoc($sql, $this->placeholders);
+        return $this->getPowerPDO()->fetchAssoc($sql);
     }
 
     /**
      * build SELECT sql
      */
-    private function buildSelectSQL() : string
+    private function buildSelectSQL() : SQL
     {
+        $params = [];
+
         // SELECT
         $sql[] = "SELECT {$this->fields}";
 
@@ -156,6 +157,13 @@ class SelectContext extends BaseContext
         }
         $sql[] = implode(" AND ", $where);
 
-        return  implode(" ", $sql);
+        // Placeholders
+        if (is_array($this->values)){
+            foreach($this->values as $key => $value){
+                $params[":{$key}"] = $value;
+            }
+        }
+
+        return new SQL(implode(" ", $sql), $params);
     }
 }

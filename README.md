@@ -86,6 +86,18 @@ foreach($users as $u){
 }
 ```
 
+### Placeholders(Prepared statement)
+
+```php
+
+$users = (new PowerPDO($pdo))
+    ->select("ID, user_name, nickname, email")
+    ->from("users")
+    ->where("deleted = 0")
+    ->bind([':nickname' => 'Bill'])
+    ->getAll();
+```
+
 ### Logging(PSR-3 Logger)
 
 ```php

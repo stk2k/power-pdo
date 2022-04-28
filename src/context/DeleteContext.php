@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Stk2k\PowerPDO\context;
 
 use Stk2k\PowerPDO\util\ArrayUtil;
+use Stk2k\PowerPDO\sql\SQL;
 
 class DeleteContext extends BaseContext
 {
     private $table;
+    private $values;
     private $where;     /* array */
-    private $placeholders;
 
     /**
      * specifies table name
@@ -24,11 +25,11 @@ class DeleteContext extends BaseContext
     /**
      * WHERE caluse
      */
-    public function where(string $where_clause, array $placeholders = []) : self
+    public function where(string $where_clause, array $values = null) : self
     {
         $this->where[] = $where_clause;
-        if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders, $placeholders);
+        if (is_array($values)){
+            $this->values = ArrayUtil::merge($this->values, $values);
         }
         return $this;
     }
@@ -38,7 +39,7 @@ class DeleteContext extends BaseContext
      */
     public function bind(array $values) : self
     {
-        $this->placeholders = ArrayUtil::merge($this->placeholders, $values);
+        $this->values = ArrayUtil::merge($this->values, $values);
         return $this;
     }
 
@@ -50,23 +51,35 @@ class DeleteContext extends BaseContext
         // generate SQL
         $sql = $this->buildDeleteSQL();
 
-        $this->getPowerPDO()->execute($sql, $this->placeholders);
+        $this->getPowerPDO()->execute($sql);
     }
 
     /**
      * build DELETE sql
      */
-    private function buildDeleteSQL() : string
+    private function buildDeleteSQL() : SQL
     {
+        $params = [];
+
         // DELETE
         $sql[] = "DELETE FROM {$this->table}";
 
         // WHERE
-        $sql[] = "WHERE";
-        foreach($this->where as $where){
-            $sql[] = $where;
+        if ($this->where)
+        {
+            $sql[] = "WHERE";
+            foreach($this->where as $where){
+                $sql[] = $where;
+            }
         }
 
-        return  implode(" ", $sql);
+        // Placeholders
+        if (is_array($this->values)){
+            foreach($this->values as $key => $value){
+                $params[":{$key}"] = $value;
+            }
+        }
+
+        return new SQL(implode(" ", $sql), $params);
     }
 }

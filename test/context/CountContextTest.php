@@ -40,24 +40,21 @@ class CountContextTest extends TestCase
         $method->setAccessible(true);
         $result = $method->invoke($object);
 
-        $this->assertEquals("SELECT COUNT(*) FROM users WHERE deleted = 0", $result);
+        $this->assertEquals("SELECT COUNT(*) FROM users WHERE deleted = 0", $result->getText());
+        $this->assertEquals([], $result->getParams());
 
         $object = (new PowerPDO($this->pdo))
             ->count('email')
             ->distinct()
             ->from("users")
             ->where("deleted = 0")
-            ->where("user_name = :user_name", [':user_name' => 'hanako']);
+            ->where("user_name = :user_name", ['user_name' => 'hanako']);
         $method = new ReflectionMethod($object, 'buildSelectSQL');
         $method->setAccessible(true);
         $result = $method->invoke($object);
 
-        $property = new ReflectionProperty($object, 'placeholders');
-        $property->setAccessible(true);
-        $value = $property->getValue($object);
-
-        $this->assertEquals("SELECT DISTINCT COUNT(email) FROM users WHERE deleted = 0 AND user_name = :user_name", $result);
-        $this->assertEquals([':user_name' => 'hanako'], $value);
+        $this->assertEquals("SELECT DISTINCT COUNT(email) FROM users WHERE deleted = 0 AND user_name = :user_name", $result->getText());
+        $this->assertEquals([':user_name' => 'hanako'], $result->getParams());
     }
 
     public function testCount()

@@ -9,6 +9,7 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 
 use Stk2k\PowerPDO\PowerPDO;
+use Stk2k\PowerPDO\sql\SQL;
 use Stk2k\PowerPDO\Test\entity\UserEntity;
 use Stk2k\PowerPDO\Test\table\UsersTable;
 
@@ -29,7 +30,7 @@ class PowerPDOTest extends TestCase
     {
         $pdo = new PowerPDO($this->pdo);
 
-        $user = $pdo->fetchObject(UserEntity::class, "SELECT * FROM users WHERE nickname = 'Dam'");
+        $user = $pdo->fetchObject(UserEntity::class, new SQL("SELECT * FROM users WHERE nickname = 'Dam'"));
 
         $this->assertInstanceOf(UserEntity::class, $user);
 
@@ -40,7 +41,7 @@ class PowerPDOTest extends TestCase
     {
         $pdo = new PowerPDO($this->pdo);
 
-        $users = $pdo->fetchAllObjects(UserEntity::class, "SELECT * FROM users");
+        $users = $pdo->fetchAllObjects(UserEntity::class, new SQL("SELECT * FROM users"));
 
         $this->assertIsArray($users);
         $this->assertCount(3, $users);

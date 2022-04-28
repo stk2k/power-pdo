@@ -43,23 +43,20 @@ class SelectContextTest extends TestCase
         $method->setAccessible(true);
         $result = $method->invoke($object);
 
-        $this->assertEquals("SELECT ID, user_name, nickname, email FROM users WHERE deleted = 0", $result);
+        $this->assertEquals("SELECT ID, user_name, nickname, email FROM users WHERE deleted = 0", $result->getText());
+        $this->assertEquals([], $result->getParams());
 
         $object = (new PowerPDO($this->pdo))
             ->select("ID, user_name, nickname, email")
             ->from("users")
             ->where("deleted = 0")
-            ->where("user_name = :user_name", [':user_name' => 'hanako']);
+            ->where("user_name = :user_name", ['user_name' => 'hanako']);
         $method = new ReflectionMethod($object, 'buildSelectSQL');
         $method->setAccessible(true);
         $result = $method->invoke($object);
 
-        $property = new ReflectionProperty($object, 'placeholders');
-        $property->setAccessible(true);
-        $value = $property->getValue($object);
-
-        $this->assertEquals("SELECT ID, user_name, nickname, email FROM users WHERE deleted = 0 AND user_name = :user_name", $result);
-        $this->assertEquals([':user_name' => 'hanako'], $value);
+        $this->assertEquals("SELECT ID, user_name, nickname, email FROM users WHERE deleted = 0 AND user_name = :user_name", $result->getText());
+        $this->assertEquals([':user_name' => 'hanako'], $result->getParams());
     }
 
     public function testSelect()
@@ -70,7 +67,7 @@ class SelectContextTest extends TestCase
             ->select("ID, deleted, user_name, nickname, email")
             ->from("users")
             ->where("deleted = 0")
-            ->where("nickname = :nickname", [':nickname' => 'Bill'])
+            ->where("nickname = :nickname", ['nickname' => 'Bill'])
             ->getFirst();
 
         $user_expected = [
@@ -88,7 +85,31 @@ class SelectContextTest extends TestCase
                 ->select()
                 ->from("users")
                 ->where("deleted = 0")
-                ->where("nickname = :nickname", [':nickname' => 'Bill'])
+                ->where("nickname = :nickname", ['nickname' => 'Bill'])
+                ->getFirst(UserEntity::class);
+        }
+        catch(Exception $e)
+        {
+            echo $pdo->getLastSQL();
+        }
+
+        $user_expected = [
+            'deleted' => '0',
+            'user_name' => 'William Tiger',
+            'nickname' => 'Bill',
+            'email' => 'bill@tiger.com',
+            'ID' => '1'
+        ];
+
+        $this->assertEquals($user_expected, get_object_vars($user));
+
+        try{
+            $user = $pdo
+                ->select()
+                ->from("users")
+                ->where("deleted = 0")
+                ->where("nickname = :nickname")
+                ->bind([':nickname' => 'Bill'])
                 ->getFirst(UserEntity::class);
         }
         catch(Exception $e)

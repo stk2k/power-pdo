@@ -8,14 +8,15 @@ use PDOStatement;
 
 use Stk2k\PowerPDO\sql\Join;
 use Stk2k\PowerPDO\util\ArrayUtil;
+use Stk2k\PowerPDO\sql\SQL;
 
 class CountContext extends BaseContext
 {
     private $field;
     private $table;
     private $table_alias;
+    private $values;
     private $where;     /* array */
-    private $placeholders;
     private $distinct;
 
     /** @var Join[] */
@@ -52,11 +53,11 @@ class CountContext extends BaseContext
     /**
      * WHERE caluse
      */
-    public function where(string $where_clause, array $placeholders = []) : self
+    public function where(string $where_clause, array $values = null) : self
     {
         $this->where[] = $where_clause;
-        if (!empty($placeholders)){
-            $this->placeholders = ArrayUtil::merge($this->placeholders ?? [], $placeholders);
+        if (is_array($values)){
+            $this->values = ArrayUtil::merge($this->values ?? [], $values);
         }
         return $this;
     }
@@ -75,7 +76,7 @@ class CountContext extends BaseContext
      */
     public function bind(array $values) : self
     {
-        $this->placeholders = ArrayUtil::merge($this->placeholders, $values);
+        $this->values = ArrayUtil::merge($this->values ?? [], $values);
         return $this;
     }
 
@@ -89,15 +90,17 @@ class CountContext extends BaseContext
         // generate SQL
         $sql = $this->buildSelectSQL();
 
-        return $this->getPowerPDO()->fetchNumber($sql, $this->placeholders);
+        return $this->getPowerPDO()->fetchNumber($sql);
     }
 
     /**
      * build SELECT sql
      *
      */
-    private function buildSelectSQL() : string
+    private function buildSelectSQL() : SQL
     {
+        $params = [];
+
         // SELECT
         $sql[] = $this->distinct ? "SELECT DISTINCT COUNT({$this->field})" : "SELECT COUNT({$this->field})";
 
@@ -130,6 +133,13 @@ class CountContext extends BaseContext
             $sql[] = implode(" AND ", $where);
         }
 
-        return  implode(" ", $sql);
+        // Placeholders
+        if (is_array($this->values)){
+            foreach($this->values as $key => $value){
+                $params[":{$key}"] = $value;
+            }
+        }
+
+        return new SQL(implode(" ", $sql), $params);
     }
 }

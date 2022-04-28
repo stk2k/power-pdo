@@ -1,4 +1,4 @@
-<?php /** @noinspection ALL */
+<?php
 declare(strict_types=1);
 namespace Stk2k\PowerPDO;
 
@@ -12,6 +12,7 @@ use Stk2k\PowerPDO\context\CountContext;
 use Stk2k\PowerPDO\context\InsertContext;
 use Stk2k\PowerPDO\context\SelectContext;
 use Stk2k\PowerPDO\context\UpdateContext;
+use Stk2k\PowerPDO\context\DeleteContext;
 use Stk2k\PowerPDO\sql\SQL;
 
 class PowerPDO
@@ -60,8 +61,6 @@ class PowerPDO
 
     /**
      * Returns last executed SQL
-     *
-     * @return SQL|null
      */
     public function getLastSQL()
     {
@@ -120,9 +119,9 @@ class PowerPDO
     /**
      * DELETE
      */
-    public function delete() : UpdateContext
+    public function delete() : DeleteContext
     {
-        return  new UpdateContext($this, $this->logger);
+        return  new DeleteContext($this, $this->logger);
     }
 
     /**
@@ -160,14 +159,13 @@ class PowerPDO
     /**
      * Fetch record(s)
      *
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return int
      */
-    public function fetchNumber(string $sql, array $params = null) : int
+    public function fetchNumber(SQL $sql) : int
     {
-        $stmt = $this->prepareSQL($sql, $params);
+        $stmt = $this->prepareSQL($sql);
 
         $stmt->execute();
 
@@ -185,14 +183,13 @@ class PowerPDO
      * Fetch record(s) as objects
      *
      * @param string $class
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return array
      */
-    public function fetchAllObjects(string $class, string $sql, array $params = null) : array
+    public function fetchAllObjects(string $class, SQL $sql) : array
     {
-        $stmt = $this->prepareSQL($sql, $params);
+        $stmt = $this->prepareSQL($sql);
 
         $stmt->execute();
 
@@ -203,14 +200,13 @@ class PowerPDO
      * Fetch a record as an object
      *
      * @param string $class
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return mixed
      */
-    public function fetchObject(string $class, string $sql, array $params = null)
+    public function fetchObject(string $class, SQL $sql)
     {
-        $stmt = $this->prepareSQL($sql, $params);
+        $stmt = $this->prepareSQL($sql);
 
         $stmt->execute();
 
@@ -220,32 +216,29 @@ class PowerPDO
     /**
      * Fetch record(s)as an assoc array
      *
-     * @param string $class
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return array
      */
-    public function fetchAllAssoc( string $sql, array $params = null) : array
+    public function fetchAllAssoc(SQL $sql) : array
     {
-        $stmt = $this->prepareSQL($sql, $params);
+        $stmt = $this->prepareSQL($sql);
 
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC, $class);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Fetch a record as an assoc array
      *
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
      * @return mixed
      */
-    public function fetchAssoc(string $sql, array $params = null)
+    public function fetchAssoc(SQL $sql)
     {
-        $stmt = $this->prepareSQL($sql, $params);
+        $stmt = $this->prepareSQL($sql);
 
         $stmt->execute();
 
@@ -255,22 +248,21 @@ class PowerPDO
     /**
      * Prepare executing SQL
      *
-     * @param string $sql
-     * @param array|null $params
+     * @param SQL $sql
      *
-     * @return mixed
+     * @return PDOStatement|false
      */
-    private function prepareSQL(string $sql, array $params = null)
+    private function prepareSQL(SQL $sql)
     {
         // update last SQL
-        $this->last_sql = new SQL($sql, $params);
+        $this->last_sql = $sql;
 
         // prepare SQL
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql->getText());
 
         // specifies placeholders
-        if (is_array($params)){
-            foreach($params as $k => $v)
+        if (is_array($sql->getParams())){
+            foreach($sql->getParams() as $k => $v)
             {
                 $stmt->bindValue($k, $v);
                 $this->logger->debug("binded: [{$k}]={$v}");

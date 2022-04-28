@@ -71,6 +71,7 @@ class InsertContext extends BaseContext
         {
             throw new PowerPdoException("Insert requires values!");
         }
+        $field_placeholders = [];
         foreach($values_map as $key => $value)
         {
             $field_placeholders[] = ":{$key}";
