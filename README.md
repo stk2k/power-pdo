@@ -3,7 +3,7 @@ Powerful and thin wrapper of PDO
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/stk2k/power-pdo.svg?style=flat-square)](https://packagist.org/packages/stk2k/power-pdo)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://travis-ci.org/stk2k/power-pdo.svg?branch=master)](https://travis-ci.org/stk2k/power-pdo)
+[![Build Status](https://app.travis-ci.com/stk2k/power-pdo.svg?branch=main)
 [![Coverage Status](https://coveralls.io/repos/github/stk2k/power-pdo/badge.svg?branch=main)](https://coveralls.io/github/stk2k/power-pdo?branch=main)
 [![Code Climate](https://codeclimate.com/github/stk2k/power-pdo/badges/gpa.svg)](https://codeclimate.com/github/stk2k/power-pdo)
 [![Total Downloads](https://img.shields.io/packagist/dt/stk2k/power-pdo.svg?style=flat-square)](https://packagist.org/packages/stk2k/power-pdo)
